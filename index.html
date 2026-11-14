@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="uz">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>R8 — 3D tajriba</title>
+  <meta name="description" content="Audi R8 interaktiv 3D taqdimoti: aylantiring, eshiklarni oching, gaz bosing.">
+  <meta name="theme-color" content="#050608">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23050608'/%3E%3Ctext x='32' y='42' font-family='Arial Black,Arial' font-weight='900' font-size='26' text-anchor='middle' fill='%23ff2b2b'%3ER8%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;500;800&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "./vendor/three/build/three.module.js",
+      "three/addons/": "./vendor/three/addons/"
+    }
+  }
+  </script>
+</head>
+<body class="loading">
+
+  <!-- Yuklanish ekrani -->
+  <div id="loader" aria-live="polite">
+    <div class="loader-inner">
+      <div class="loader-mark">R8</div>
+      <div class="loader-bar"><i id="loader-fill"></i></div>
+      <div class="loader-row"><span>Dvigatel qizdirilmoqda</span><span id="loader-pct">0%</span></div>
+    </div>
+  </div>
+
+  <!-- 3D sahna -->
+  <canvas id="scene" aria-label="Audi R8 3D modeli"></canvas>
+  <div class="vignette" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
+
+  <!-- Yuqori panel -->
+  <header class="topbar">
+    <a class="brand" href="#hero"><b>R8</b><span>3D tajriba</span></a>
+    <nav class="topnav" aria-label="Bo'limlar">
+      <a href="#dizayn">Dizayn</a>
+      <a href="#salon">Salon</a>
+      <a href="#dvigatel">Dvigatel</a>
+      <a href="#tezlik">Tezlik</a>
+    </nav>
+    <button class="btn-ghost" id="explore-open" type="button">
+      <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9M12 3v4m9 5h-4M12 3c3 2.5 4.5 5.5 4.5 9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      Erkin ko'rish
+    </button>
+  </header>
+  <div class="progress" aria-hidden="true"><i id="progress-fill"></i></div>
+
+  <!-- Yon nuqtalar -->
+  <nav class="dots" aria-label="Bo'lim navigatsiyasi">
+    <a href="#hero" data-i="0"><span>Kirish</span></a>
+    <a href="#dizayn" data-i="1"><span>Dizayn</span></a>
+    <a href="#salon" data-i="2"><span>Salon</span></a>
+    <a href="#dvigatel" data-i="3"><span>Dvigatel</span></a>
+    <a href="#tezlik" data-i="4"><span>Tezlik</span></a>
+    <a href="#final" data-i="5"><span>Erkin</span></a>
+  </nav>
+
+  <main id="story">
+
+    <!-- 00 KIRISH -->
+    <section id="hero" class="panel panel-left" data-key="hero">
+      <div class="copy">
+        <p class="eyebrow reveal">2008 · Quattro · V8 FSI</p>
+        <h1 class="display reveal"><span class="thin">Audi</span><span class="huge">R8</span></h1>
+        <p class="lead reveal">Yo'l uchun tug'ilgan poyga mashinasi. Pastga aylantiring — u siz bilan birga aylanadi.</p>
+        <div class="hints reveal">
+          <span class="hint"><i class="ico-scroll"></i>Scroll qiling</span>
+          <span class="hint only-mouse"><i class="ico-drag"></i>Torting — aylantiring</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 01 DIZAYN -->
+    <section id="dizayn" class="panel panel-right" data-key="design">
+      <div class="copy">
+        <p class="index reveal">01 <em>/ 05</em></p>
+        <h2 class="title reveal">Shakl —<br>tezlik tili</h2>
+        <p class="lead reveal">Past siluet, keng yelkalar va mashhur «sideblade». Har bir chiziq havoni kesish uchun chizilgan.</p>
+        <div class="swatches reveal" role="group" aria-label="Kuzov rangi">
+          <p class="label">Rangni tanlang — <b id="color-name">Misano qizil</b></p>
+          <div class="swatch-row" data-swatches></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 02 SALON -->
+    <section id="salon" class="panel panel-left" data-key="salon">
+      <div class="copy">
+        <p class="index reveal">02 <em>/ 05</em></p>
+        <h2 class="title reveal">Ichkariga<br>marhamat</h2>
+        <p class="lead reveal">Eshiklar ochildi. «Monoposto» kokpiti haydovchini o'rab oladi — hamma narsa qo'l ostida, ortiqcha hech narsa yo'q.</p>
+        <ul class="ticks reveal">
+          <li>Haydovchiga qaratilgan panel</li>
+          <li>Sport o'rindiqlari</li>
+          <li>Tekis kesilgan rul</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 03 DVIGATEL -->
+    <section id="dvigatel" class="panel panel-right" data-key="engine">
+      <div class="copy">
+        <p class="index reveal">03 <em>/ 05</em></p>
+        <h2 class="title reveal">Yurak —<br>orqada</h2>
+        <p class="lead reveal">4.2 litrli V8 FSI o'rindiqlar ortida, oyna ostida joylashgan. Og'irlik markazda — boshqaruv aniq.</p>
+        <div class="stats reveal">
+          <div class="stat"><b data-count="420">0</b><span>ot kuchi</span></div>
+          <div class="stat"><b data-count="430">0</b><span>N·m moment</span></div>
+          <div class="stat"><b data-count="4.6" data-dec="1">0</b><span>s · 0–100</span></div>
+          <div class="stat"><b data-count="301">0</b><span>km/soat</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 04 TEZLIK -->
+    <section id="tezlik" class="panel panel-speed" data-key="speed">
+      <div class="speed-head">
+        <p class="index reveal">04 <em>/ 05</em></p>
+        <h2 class="title reveal">Gazni bosing</h2>
+        <p class="lead reveal">Tugmani bosib turing — tezlik oshadi, V8 ovoz beradi.</p>
+      </div>
+
+      <div class="hud reveal" id="hud">
+        <div class="hud-main">
+          <div class="hud-speed">
+            <b id="hud-speed">0</b>
+            <span>km/soat</span>
+          </div>
+          <div class="hud-meta">
+            <div><span>0–100</span><b id="hud-0100">—</b></div>
+            <div><span>Rekord</span><b id="hud-max">0</b></div>
+            <div><span>Ayl/daq</span><b id="hud-rpm">0</b></div>
+          </div>
+          <div class="hud-gear">
+            <span>uzatma</span>
+            <b id="hud-gear">N</b>
+          </div>
+        </div>
+        <div class="rpm" aria-hidden="true">
+          <div class="rpm-track"><i id="rpm-fill"></i></div>
+          <div class="rpm-scale"><span>0</span><span>2</span><span>4</span><span>6</span><span class="red">8</span></div>
+        </div>
+        <div class="pedals">
+          <button id="btn-brake" class="pedal pedal-brake" type="button" aria-label="Tormoz">Tormoz</button>
+          <button id="btn-gas" class="pedal pedal-gas" type="button" aria-label="Gaz — bosib turing">
+            <span class="pedal-ring"></span>
+            <span class="pedal-txt">GAZ</span>
+            <small>bosib turing</small>
+          </button>
+          <button id="btn-sound" class="pedal pedal-sound" type="button" aria-pressed="true">Ovoz: yoniq</button>
+        </div>
+        <p class="keys only-mouse"><kbd>Space</kbd> / <kbd>↑</kbd> gaz &nbsp;·&nbsp; <kbd>↓</kbd> tormoz</p>
+      </div>
+    </section>
+
+    <!-- 05 FINAL -->
+    <section id="final" class="panel panel-center" data-key="final">
+      <div class="copy">
+        <p class="index reveal">05 <em>/ 05</em></p>
+        <h2 class="title reveal">Endi o'zingiz<br>boshqaring</h2>
+        <p class="lead reveal">Mashinani istalgan tomondan ko'ring, yaqinlashtiring, eshiklarini oching, chiroqlarini yoqing.</p>
+        <button class="btn-primary reveal" id="explore-open-2" type="button">Erkin ko'rish rejimi →</button>
+      </div>
+      <footer class="credits">
+        3D model: <a href="https://sketchfab.com/3d-models/audi-r8-0e5c6feed3ff489093e33e686dd8f796" target="_blank" rel="noopener">«Audi R8»</a> — Randomness,
+        <a href="http://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>.
+        Norasmiy muxlislik loyihasi, Audi AG bilan bog'liq emas.
+      </footer>
+    </section>
+  </main>
+
+  <!-- Erkin ko'rish paneli -->
+  <aside class="explore" id="explore" aria-hidden="true">
+    <button class="explore-close" id="explore-close" type="button" aria-label="Yopish">✕ <span>Yopish</span></button>
+    <p class="explore-tip">Torting — aylantirish · G'ildirak / pinch — yaqinlashtirish</p>
+    <div class="explore-panel">
+      <div class="swatch-row" data-swatches></div>
+      <div class="toggles">
+        <button type="button" class="toggle" id="tg-doors" aria-pressed="false">Eshiklar</button>
+        <button type="button" class="toggle" id="tg-lights" aria-pressed="false">Chiroqlar</button>
+        <button type="button" class="toggle" id="tg-spin" aria-pressed="true">Avto-aylanish</button>
+      </div>
+    </div>
+  </aside>
+
+  <noscript><p class="noscript">Bu sayt ishlashi uchun JavaScript yoqilgan bo'lishi kerak.</p></noscript>
+  <script>
+    // Sayt fayl sifatida (file://) ochilsa, brauzer 3D modulni yuklamaydi — foydalanuvchiga tushuntiramiz.
+    if (location.protocol === 'file:') {
+      document.querySelector('.loader-row').innerHTML =
+        '<span class="loader-error">Sayt lokal server orqali ochilishi kerak: papkadagi <b>start.command</b> faylini ikki marta bosing.</span>';
+    }
+  </script>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
